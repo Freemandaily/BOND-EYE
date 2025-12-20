@@ -18,6 +18,9 @@ class decode_nadfun:
         Returns:
             dict: A dictionary containing deployer_address, token_address, and fee_reciever, deployer_bought_amount.
         """
+        if not log_data:
+            return 
+        
         token_creation_data = []
         for log in log_data:
             topics = [str(topic).lower() for topic in log.get('topics',[])]
@@ -125,6 +128,9 @@ class decode_nadfun:
         Returns:
             dict: A dictionary containing purchaser_address, token_address, and purchase_amount.
         """
+        if not log_data:
+            return 
+        
         token_exchange_data = []
         for log in log_data:
             topics = [str(topic) for topic in log.get('topics',[])]

@@ -20,6 +20,9 @@ class PostgresSink:
 
 
     def insert_token_creations(self, rows: List[Dict]):
+        if not rows:
+            return
+        
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:
@@ -52,6 +55,9 @@ class PostgresSink:
         #     self.pool.putconn(conn)
 
     def insert_token_trades(self, rows: List[Dict]):
+        if not rows:
+            return 
+        
         conn = self.pool.getconn()
         try:
             with conn.cursor() as cur:

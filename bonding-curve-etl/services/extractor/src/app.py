@@ -56,7 +56,6 @@ async def filter(json_data):
     decoder = decode_nadfun()
     sink = PostgresSink()
 
-    print('Filtering For The Log Data')
     streamer = json_data.get('streamer')
     data = json_data.get('data')
     if not data:
@@ -67,8 +66,11 @@ async def filter(json_data):
         maybe_creation = await decoder.decode_for_token_creation(data)
         parsed_trades = await decoder.decode_for_token_exchange(data)
     except Exception as e:
-        print("Decoder error:", e) 
+        print("Decoder error:", e)
+        maybe_creation = []
+        parsed_trades = []  
 
+    error_count = 5
     while True:
         try:
             if maybe_creation:
@@ -77,6 +79,10 @@ async def filter(json_data):
                 sink.insert_token_trades(parsed_trades)
             break  
         except Exception as e:
+            if error_count >= 5:
+                error_count = 0 
+                break
+
             print("Sink error, Issue :", e)
             sink = PostgresSink() 
             continue
