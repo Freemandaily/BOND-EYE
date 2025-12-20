@@ -28,19 +28,22 @@ ADDRESS = '0xA7283d07812a02AFB7C09B60f8896bCEA3F90aCE'
 
 app = FastAPI()
 
+@app.get('/health')
+async def health_check():
+    return {'status':'active'}
+
+
 @app.post("/webhook")
 async def webhook_for_quickNode(request: Request):
     """
     Purpose:
         Gets Event logs From The quickNode Streaming Service
     """
-
-    # Read raw body
+    
     body_bytes = await request.body()
     body_str = body_bytes.decode()
     
     try:
-        # Parse JSON
         json_data = json.loads(body_str)
         asyncio.create_task(filter(json_data))
     except json.JSONDecodeError as e:
@@ -50,7 +53,6 @@ async def webhook_for_quickNode(request: Request):
     return Response(content="Webhook received", status_code=200)
 
 async def filter(json_data):
-        
     decoder = decode_nadfun()
     sink = PostgresSink()
 
@@ -65,7 +67,6 @@ async def filter(json_data):
     except Exception as e:
         print("Decoder error:", e) 
 
-    # persist to sink in executor (sync sink)
     while True:
         try:
             if maybe_creation:
@@ -75,7 +76,7 @@ async def filter(json_data):
             break  
         except Exception as e:
             print("Sink error, Issue :", e)
-            sink = PostgresSink()  # re-init sink on error
+            sink = PostgresSink() 
             continue
 
 

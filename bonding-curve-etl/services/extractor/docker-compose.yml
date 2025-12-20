@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  # extractor_service:
+  #   build: .
+  #   container_name: EXTRACTOR_SERVICE
+
+  #   environment:
+  #     POSTGRES_USER: extractor
+  #     POSTGRES_PASSWORD: extractor_pass
+  #     POSTGRES_DB: extractor_db
+  #     POSTGRES_HOST: postgres
+  #     POSTGRES_PORT: 5432
+
+  #   depends_on:
+  #     - postgres
+
+  postgres:
+    image: postgres:16
+    container_name: POSTGRES_DB2
+
+    environment:
+      POSTGRES_USER: freeman
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: Extractor_db
+
+    ports:
+      - "5432:5432"
+
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  extractor:
+    build:
+      context: ./services/extractor
+    container_name: extractor
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./services/extractor/.env
+    depends_on:
+      - postgres
+      
+volumes:
+  pgdata:
