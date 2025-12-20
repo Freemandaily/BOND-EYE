@@ -1,0 +1,19 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "token_meta_v1",
+    "type": "object",
+    "properties": {
+        "token_address": {
+            "type": "string"
+        },
+        "symbol": {
+            "type": "string"
+        },
+        "decimals": {
+            "type": "integer"
+        }
+    },
+    "required": [
+        "token_address"
+    ]
+}
