@@ -57,10 +57,12 @@ async def filter(json_data):
     sink = PostgresSink()
 
     print('Filtering For The Log Data')
+    streamer = json_data.get('streamer')
     data = json_data.get('data')
     if not data:
         return 
     
+    print(f'Filtering For The {streamer} Log Data')
     try:
         maybe_creation = await decoder.decode_for_token_creation(data)
         parsed_trades = await decoder.decode_for_token_exchange(data)
