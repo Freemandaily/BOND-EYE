@@ -25,9 +25,9 @@ class decode_nadfun:
         for log in log_data:
             topics = [str(topic).lower() for topic in log.get('topics',[])]
             if topics and topics[0] == self.create_topic.lower():
-                deployer_address =  topics[1][24:]
-                token_address =  topics[2][24:]
-                pool =  topics[3][24:]
+                deployer_address =  topics[1][26:]
+                token_address =  topics[2][26:]
+                pool =  topics[3][26:]
                 
                 data_hex = log.get('data','0x')
                 decoded_data = await self.decode_payload(bytes.fromhex(data_hex[2:]))
@@ -45,7 +45,7 @@ class decode_nadfun:
 
             # if topics and '0x' + topics[0] == self.buy_topic.lower():
             #     for crxt_data in token_creation_data:
-            #         if crxt_data.get('token_address').lower() == '0x' + topics[2][24:] and crxt_data.get('tx_hash').lower() == '0x' + log.get('transactionHash').hex().lower():
+            #         if crxt_data.get('token_address').lower() == '0x' + topics[2][26:] and crxt_data.get('tx_hash').lower() == '0x' + log.get('transactionHash').hex().lower():
             #             data_hex = log.get('data','0x').hex()
             #             datas = [data_hex[i:i+64] for i in range(0, len(data_hex), 64)]
             #             amount = int(datas[0],16)
@@ -135,8 +135,8 @@ class decode_nadfun:
         for log in log_data:
             topics = [str(topic) for topic in log.get('topics',[])]
             if topics and topics[0].lower() == self.buy_topic.lower():
-                purchaser_address = topics[1][24:]
-                token_address = topics[2][24:]
+                purchaser_address = topics[1][26:]
+                token_address = topics[2][26:]
                 data_hex = log.get('data','0x')
                 datas = [data_hex[i:i+64] for i in range(0, len(data_hex), 64)]
                 amount_in = int(datas[0],16)
@@ -152,8 +152,8 @@ class decode_nadfun:
                     'block_timestamp': int(log.get('blockTimestamp','0'),16)
                 })
             if topics and topics[0].lower() == self.sell_topic.lower():
-                seller_address =  topics[1][24:]
-                token_address =  topics[2][24:]
+                seller_address =  topics[1][26:]
+                token_address =  topics[2][26:]
                 data_hex = log.get('data','0x')
                 datas = [data_hex[i:i+64] for i in range(0, len(data_hex), 64)]
                 amount_in = int(datas[0],16)
