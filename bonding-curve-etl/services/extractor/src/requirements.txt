@@ -4,5 +4,7 @@ requests
 web3
 redis
 psycopg2-binary
+pymongo
+python-dotenv
 dotenv
 uvicorn

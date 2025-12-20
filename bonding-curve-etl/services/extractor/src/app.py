@@ -7,6 +7,7 @@ from typing import Optional
 from connectors.nadfun_connector import NadfunConnector
 from decoder.decode_nadfun import decode_nadfun
 from sink.postgres_sink import PostgresSink
+from state.mongo_failure_logger import MongoFailureLogger
 from state.redis_state import RedisState
 
 
@@ -25,6 +26,8 @@ START_BLOCK = int(os.getenv("START_BLOCK", 41405100))
 SLEEP_SECONDS = float(os.getenv("POLL_SLEEP", "5"))
 ADDRESS = os.getenv("TARGET_ADDRESS")  # optional contract address filter
 ADDRESS = '0xA7283d07812a02AFB7C09B60f8896bCEA3F90aCE'
+
+mongo_logger = MongoFailureLogger()
 
 app = FastAPI()
 
@@ -67,6 +70,16 @@ async def filter(json_data):
         parsed_trades = await decoder.decode_for_token_exchange(data)
     except Exception as e:
         print("Decoder error:", e)
+        try:
+            mongo_logger.log_failure(
+                "decoder",
+                e,
+                payload=data,
+                meta={"streamer": streamer},
+            )
+        except Exception as ee:
+            print("Failed to log decoder error to Mongo:", ee)
+
         maybe_creation = []
         parsed_trades = []  
 
@@ -81,6 +94,16 @@ async def filter(json_data):
         except Exception as e:
             if error_count >= 5:
                 error_count = 0 
+                try:
+                    mongo_logger.log_failure(
+                        "sink",
+                        e,
+                        payload={"maybe_creation": maybe_creation, "parsed_trades": parsed_trades},
+                        meta={"streamer": streamer},
+                    )
+                except Exception as ee:
+                    print("Failed to log sink error to Mongo:", ee)
+
                 break
 
             print("Sink error, Issue :", e)
