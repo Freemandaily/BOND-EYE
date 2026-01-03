@@ -28,7 +28,7 @@ class PostgresSink:
             with conn.cursor() as cur:
                 for r in rows:
                     cur.execute("""
-                        INSERT INTO token_creations (token_address, deployer_address, pool,
+                        INSERT INTO token_deployment (token_address, deployer_address, pool,
                                 tx_hash,block_number,block_timestamp,name,
                                 virtualMon,virtualToken,targetTokenAmount,token_description,
                                 website,twitter,telegram,image_url,symbol
@@ -63,14 +63,14 @@ class PostgresSink:
             with conn.cursor() as cur:
                 for r in rows:
                     cur.execute("""
-                        INSERT INTO token_trades (token_address, trader, amount_in,amount_out, trade_direction, tx_hash, block_number,block_timestamp)
+                        INSERT INTO token_transactions (token_address, trader, amount_in,amount_out, trade_direction, tx_hash, block_number,block_timestamp)
                         VALUES (%s, %s, %s, %s, %s, %s,%s,%s)
                         ON CONFLICT (tx_hash) DO UPDATE SET
                         trader = EXCLUDED.trader,
                         trade_direction = EXCLUDED.trade_direction,
                         block_number = EXCLUDED.block_number,
                         tx_hash = EXCLUDED.tx_hash;
-                    """, (r.get('token_address'), r.get('trader'), str(r.get('amount_out')),str(r.get('amount_out')), r.get('trade_direction'), r.get('tx_hash'), str(r.get('block_number')), str(r.get('block_timestamp'))))
+                    """, (r.get('token_address'), r.get('trader'), str(r.get('amount_in')),str(r.get('amount_out')), r.get('trade_direction'), r.get('tx_hash'), str(r.get('block_number')), str(r.get('block_timestamp'))))
             conn.commit()
             print("Inserted/Updated token trades successfully.")
             time.sleep(2)
