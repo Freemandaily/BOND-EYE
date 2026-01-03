@@ -30,7 +30,6 @@ class decode_nadfun:
                 pool =  topics[3][26:]
                 
                 data_hex = log.get('data','0x')
-                data_hex = data_hex[2:]
                 decoded_data = await self.decode_payload(bytes.fromhex(data_hex[2:]))
                 new_token_data = {
                     'deployer_address':'0x'+ deployer_address,
@@ -157,6 +156,7 @@ class decode_nadfun:
                 seller_address =  topics[1][26:]
                 token_address =  topics[2][26:]
                 data_hex = log.get('data','0x')
+                data_hex = data_hex[2:]
                 datas = [data_hex[i:i+64] for i in range(0, len(data_hex), 64)]
                 amount_in = int(datas[0],16)
                 amount_out = int(datas[1],16)
